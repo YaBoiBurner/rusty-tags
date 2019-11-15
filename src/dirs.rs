@@ -1,11 +1,12 @@
+use extern_dirs;
 use std::fs;
 use std::path::{Path, PathBuf};
-use extern_dirs;
 
 use rt_result::RtResult;
 
 lazy_static! {
-    static ref HOME_DIR: RtResult<PathBuf> = home_dir_internal();
+    static ref CONFIG_DIR: RtResult<PathBuf> = config_dir_internal();
+    static ref CACHE_DIR: RtResult<PathBuf> = cache_dir_internal();
     static ref RUSTY_TAGS_DIR: RtResult<PathBuf> = rusty_tags_dir_internal();
     static ref RUSTY_TAGS_CACHE_DIR: RtResult<PathBuf> = rusty_tags_cache_dir_internal();
     static ref RUSTY_TAGS_LOCKS_DIR: RtResult<PathBuf> = rusty_tags_locks_dir_internal();
@@ -35,21 +36,33 @@ pub fn rusty_tags_locks_dir() -> RtResult<&'static Path> {
         .map_err(|err| err.clone())
 }
 
-fn home_dir() -> RtResult<PathBuf> {
-    HOME_DIR.clone()
+fn config_dir() -> RtResult<PathBuf> {
+    CONFIG_DIR.clone()
 }
 
-fn home_dir_internal() -> RtResult<PathBuf> {
-    if let Some(path) = extern_dirs::home_dir() {
+fn config_dir_internal() -> RtResult<PathBuf> {
+    if let Some(path) = extern_dirs::config_dir() {
         Ok(path)
     } else {
-        Err("Couldn't read home directory!".into())
+        Err("Couldn't read config directory!".into())
+    }
+}
+
+fn cache_dir() -> RtResult<PathBuf> {
+    CACHE_DIR.clone()
+}
+
+fn cache_dir_internal() -> RtResult<PathBuf> {
+    if let Some(path) = extern_dirs::cache_dir() {
+        Ok(path)
+    } else {
+        Err("Couldn't read cache directory!".into())
     }
 }
 
 fn rusty_tags_cache_dir_internal() -> RtResult<PathBuf> {
-    let dir = rusty_tags_dir()?.join("cache");
-    if ! dir.is_dir() {
+    let dir = cache_dir()?.join("rusty-tags/cache");
+    if !dir.is_dir() {
         fs::create_dir_all(&dir)?;
     }
 
@@ -57,8 +70,8 @@ fn rusty_tags_cache_dir_internal() -> RtResult<PathBuf> {
 }
 
 fn rusty_tags_locks_dir_internal() -> RtResult<PathBuf> {
-    let dir = rusty_tags_dir()?.join("locks");
-    if ! dir.is_dir() {
+    let dir = cache_dir()?.join("rusty-tags/locks");
+    if !dir.is_dir() {
         fs::create_dir_all(&dir)?;
     }
 
@@ -66,8 +79,8 @@ fn rusty_tags_locks_dir_internal() -> RtResult<PathBuf> {
 }
 
 fn rusty_tags_dir_internal() -> RtResult<PathBuf> {
-    let dir = home_dir()?.join(".rusty-tags");
-    if ! dir.is_dir() {
+    let dir = config_dir()?.join("rusty-tags");
+    if !dir.is_dir() {
         fs::create_dir_all(&dir)?;
     }
 
