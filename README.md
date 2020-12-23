@@ -23,7 +23,9 @@ Only `universal-ctags` will add tags for struct fields and enum variants.
 Installation
 ============
 
-    $ cargo install rusty-tags
+```sh
+cargo install rusty-tags
+```
 
 The build binary will be located at `~/.cargo/bin/rusty-tags`.
 
@@ -52,50 +54,64 @@ to be added manually with the path `$RUST_SRC_PATH/rusty-tags.vi` or
 If you're using [rustup](<https://www.rustup.rs/>) you can get the
 rust source of the currently used compiler version by calling:
 
-    $ rustup component add rust-src
+```sh
+rustup component add rust-src
+```
 
 And then setting `RUST_SRC_PATH` inside of e.g. `~/.bashrc`.
 
 For `rustc >= 1.47.0`:
 
-    $ export RUST_SRC_PATH=$(rustc --print sysroot)/lib/rustlib/src/rust/library/
+```sh
+export RUST_SRC_PATH=$(rustc --print sysroot)/lib/rustlib/src/rust/library/
+```
 
 For `rustc < 1.47.0`:
 
-    $ export RUST_SRC_PATH=$(rustc --print sysroot)/lib/rustlib/src/rust/src/
+```sh
+export RUST_SRC_PATH=$(rustc --print sysroot)/lib/rustlib/src/rust/src/
+```
 
 Configuration
 =============
 
 The current supported configuration at `~/.rusty-tags/config.toml` (defaults displayed):
 
-    # the file name used for vi tags
-    vi_tags = "rusty-tags.vi"
+```toml
+# the file name used for vi tags
+vi_tags = "rusty-tags.vi"
 
-    # the file name used for emacs tags
-    emacs_tags = "rusty-tags.emacs"
+# the file name used for emacs tags
+emacs_tags = "rusty-tags.emacs"
 
-    # the name or path to the ctags executable, by default executables with names
-    # are searched in the following order: "ctags", "exuberant-ctags", "exctags", "universal-ctags", "uctags"
-    ctags_exe = ""
+# the name or path to the ctags executable, by default executables with names
+# are searched in the following order: "ctags", "exuberant-ctags", "exctags", "universal-ctags", "uctags"
+ctags_exe = ""
 
-    # options given to the ctags executable
-    ctags_options = ""
+# options given to the ctags executable
+ctags_options = ""
+```
 
 Vim Configuration
 =================
 
 Put this into your `~/.vimrc` file:
 
-    autocmd BufRead *.rs :setlocal tags=./rusty-tags.vi;/
+```vim
+autocmd BufRead *.rs :setlocal tags=./rusty-tags.vi;/
+```
 
 Or if you've supplied the rust source code by defining `RUST_SRC_PATH`:
 
-    autocmd BufRead *.rs :setlocal tags=./rusty-tags.vi;/,$RUST_SRC_PATH/rusty-tags.vi
+```vim
+autocmd BufRead *.rs :setlocal tags=./rusty-tags.vi;/,$RUST_SRC_PATH/rusty-tags.vi
+```
 
 And:
 
-    autocmd BufWritePost *.rs :silent! exec "!rusty-tags vi --quiet --start-dir=" . expand('%:p:h') . "&" | redraw!
+```vim
+autocmd BufWritePost *.rs :silent! exec "!rusty-tags vi --quiet --start-dir=" . expand('%:p:h') . "&" | redraw!
+```
 
 Emacs Configuration
 ===================
@@ -104,9 +120,11 @@ Install [counsel-etags](https://github.com/redguardtoo/counsel-etags).
 
 Create file `.dir-locals.el` in rust project root (please note the line to set `counsel-etags-extra-tags-files` is optional):
 
-    ((nil . ((counsel-etags-update-tags-backend . (lambda (src-dir) (shell-command "rusty-tags emacs")))
-             (counsel-etags-extra-tags-files . ("~/third-party-lib/rusty-tags.emacs" "$RUST_SRC_PATH/rusty-tags.emacs"))
-             (counsel-etags-tags-file-name . "rusty-tags.emacs"))))
+```lisp
+((nil . ((counsel-etags-update-tags-backend . (lambda (src-dir) (shell-command "rusty-tags emacs")))
+         (counsel-etags-extra-tags-files . ("~/third-party-lib/rusty-tags.emacs" "$RUST_SRC_PATH/rusty-tags.emacs"))
+         (counsel-etags-tags-file-name . "rusty-tags.emacs"))))
+```
 
 Use `M-x counsel-etags-find-tag-at-point` for code navigation.
 
@@ -121,7 +139,9 @@ calling `rusty-tags vi` should work.
 By default it expects tag files with the name `.tags`, which can be set
 in `~/.rusty-tags/config.toml`:
 
-    vi_tags = ".tags"
+```toml
+vi_tags = ".tags"
+```
 
 Or by calling `rusty-tags vi --output=".tags"`.
 
